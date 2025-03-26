@@ -1,0 +1,16 @@
+{
+    "diagnostics": {
+        "perro": {
+            "fiebre, vómitos": {
+                "diagnosis": "Gastroenteritis o Parvovirus",
+                "advice": "Llevar al veterinario urgentemente."
+            }
+        },
+        "gato": {
+            "estornudos, legañas": {
+                "diagnosis": "Gripe felina",
+                "advice": "Visita al veterinario."
+            }
+        }
+    }
+}
