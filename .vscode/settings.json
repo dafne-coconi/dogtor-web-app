@@ -1,6 +1,5 @@
 {
-    "appService.zipIgnorePattern": [
-        "node_modules{,/**}",
-        ".vscode{,/**}"
-    ]
+    "engines": {
+    "node": "22.14.0"
+  }
 }
