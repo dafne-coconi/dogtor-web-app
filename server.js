@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static('public'));
@@ -56,6 +56,6 @@ app.post('/diagnose', (req, res) => {
     res.json({ diagnosis, advice });
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
 });
