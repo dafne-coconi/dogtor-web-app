@@ -43,14 +43,14 @@ app.get("/admin", checkJwt, checkGroup(GROUPS.ADMIN), (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
-console.log("Esto es: ", res.auth.preferred_username)
+
 app.post("/api/chat", async (req, res) => {
   const userId = req.auth.preferred_username;
   const userMessage = req.body.message;
 
   try {
     if (!historial[userId]) historial[userId] = [];
-    historial[userId].push({ role: "user", content: message });
+    historial[userId].push({ role: "user", content: userMessage });
 
     const response = await axios.post(
       `${openaiEndpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`,
