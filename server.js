@@ -26,7 +26,7 @@ app.post("/api/chat", async (req, res) => {
 
   try {
     const response = await axios.post(
-      `https://${openaiEndpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`,
+      `${openaiEndpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`,
       {
         messages: [
           { role: "system", content: "Eres un asistente que responde preguntas sobre salud de mascotas. Das un diagnóstico y recomendaciones, pero al final siempre recomiendas asistir al veterinario" },
