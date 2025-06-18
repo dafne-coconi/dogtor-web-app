@@ -43,6 +43,7 @@ app.get("/admin", checkJwt, checkGroup(GROUPS.ADMIN), (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
+console.log("Esto es: ", res.auth.preferred_username)
 app.post("/api/chat", async (req, res) => {
   const userId = req.auth.preferred_username;
   const userMessage = req.body.message;
