@@ -1,4 +1,4 @@
-document.getElementById("chatForm").addEventListener("submit", async (e) => {
+document.getElementById("diagnosticForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const message = document.getElementById("userInput").value;
       const response = await fetch("/api/chat", {
