@@ -32,7 +32,7 @@ const GROUPS = {
 
 // Rutas protegidas
 app.get("/dueno", checkJwt, checkGroup(GROUPS.DUENIOS), (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dueno.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.get("/vet", checkJwt, checkGroup(GROUPS.VETERINARIOS), (req, res) => {
