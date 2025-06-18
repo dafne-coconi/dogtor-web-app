@@ -1,0 +1,10 @@
+<h2>Administrador</h2>
+<pre id="historial"></pre>
+
+<script>
+  fetch("/api/historial")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("historial").innerText = JSON.stringify(data, null, 2);
+    });
+</script>

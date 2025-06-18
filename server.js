@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const axios = require("axios");
+const { checkJwt, checkGroup } = require("./auth");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,10 +22,35 @@ app.use(express.static('public'));
 // Base de datos simple (en un caso real, usa MongoDB/PostgreSQL)
 const DB_FILE = path.join(__dirname, 'database.json');
 
+const historial = {}; // Historial de conversaciones simple en memoria
+
+const GROUPS = {
+  DUENIOS: process.env.GROUP_OWN_ID,
+  VETERINARIOS: process.env.GROUP_VET_ID,
+  ADMIN: process.env.GROUP_ADMIN_ID
+};
+
+// Rutas protegidas
+app.get("/dueno", checkJwt, checkGroup(GROUPS.DUENIOS), (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dueno.html"));
+});
+
+app.get("/vet", checkJwt, checkGroup(GROUPS.VETERINARIOS), (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "vet.html"));
+});
+
+app.get("/admin", checkJwt, checkGroup(GROUPS.ADMIN), (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "admin.html"));
+});
+
 app.post("/api/chat", async (req, res) => {
+  const userId = req.auth.preferred_username;
   const userMessage = req.body.message;
 
   try {
+    if (!historial[userId]) historial[userId] = [];
+    historial[userId].push({ role: "user", content: message });
+
     const response = await axios.post(
       `${openaiEndpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`,
       {
@@ -63,7 +89,9 @@ app.post("/api/chat", async (req, res) => {
         }
       }
     );
+
     var respuesta = response.data.choices[0].message.content
+    historial[userId].push({ role: "assistant", content: respuesta });
     //console.log(respuesta)
     res.json({respuesta}
     );
@@ -73,6 +101,21 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+// Obtener historial del usuario autenticado
+app.get("/api/mihistorial", checkJwt, checkGroup(GROUPS.DUENIOS), (req, res) => {
+  const userId = req.auth.preferred_username;
+  res.json(historial[userId] || []);
+});
+
+// Obtener todo el historial (vet y admin)
+app.get("/api/historial", checkJwt, (req, res) => {
+  const groups = req.auth.groups || [];
+  if (groups.includes(GROUPS.VETERINARIOS) || groups.includes(GROUPS.ADMIN)) {
+    res.json(historial);
+  } else {
+    res.status(403).send("No autorizado");
+  }
+});
 
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
