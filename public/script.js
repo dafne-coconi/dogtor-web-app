@@ -18,6 +18,10 @@ document.getElementById("diagnosticForm").addEventListener("submit", async (e) =
         `;
       console.log("Después")
       resultDiv.style.display = 'block';
+
+    fetch("/api/mihistorial")
+    .then(res => res.json())
+    .then(data => console.log("Historial dueño:", data.respuesta));
     } catch (error) {
         console.log(error)
         alert("Error al obtener diagnóstico")
