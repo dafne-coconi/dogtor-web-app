@@ -1,6 +1,6 @@
 document.getElementById("diagnosticForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const message = document.getElementById("userInput").value;
+      const message = document.getElementById("symptoms").value;
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -8,5 +8,5 @@ document.getElementById("diagnosticForm").addEventListener("submit", async (e) =
       });
 
       const data = await response.json();
-      document.getElementById("chatOutput").innerText = data.reply;
+      document.getElementById("result").innerText = data.reply;
     });

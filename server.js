@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const axios = require("axios");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -81,7 +82,7 @@ app.post("/api/chat", async (req, res) => {
 
     res.json({ reply: response.data.choices[0].message.content });
   } catch (error) {
-    console.error("Error:", error.response?.data || error.message);
+    console.error("Error:", error.response?.data || error);
     res.status(500).json({ error: "Error al contactar Azure OpenAI." });
   }
 });
