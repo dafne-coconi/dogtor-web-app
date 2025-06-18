@@ -35,9 +35,9 @@ const petDiagnostics = {
     }
 };
 
-app.post('/diagnose', (req, res) => {
+/*app.post('/diagnose', (req, res) => {
     const { petType, symptoms } = req.body;
-    const symptomKey = symptoms.join(', ').toLowerCase();
+   // const symptomKey = symptoms.join(', ').toLowerCase();
 
     let diagnosis = "No se pudo determinar la enfermedad.";
     let advice = "Consulta a un veterinario para un diagnóstico preciso.";
@@ -55,6 +55,37 @@ app.post('/diagnose', (req, res) => {
 
     res.json({ diagnosis, advice });
 });
+*/
+
+app.post("/api/chat", async (req, res) => {
+  const userMessage = req.body.message;
+
+  try {
+    const response = await axios.post(
+      `${process.env.AZURE_OPENAI_ENDPOINT}/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT}/chat/completions?api-version=${process.env.AZURE_OPENAI_API_VERSION}`,
+      {
+        messages: [
+          { role: "system", content: "Eres un asistente que responde preguntas sobre salud de mascotas. Das un diagnóstico y recomendaciones, pero al final siempre recomiendas asistir al veterinario" },
+          { role: "user", content: userMessage }
+        ],
+        temperature: 0.7,
+        max_tokens: 500
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": process.env.AZURE_OPENAI_KEY
+        }
+      }
+    );
+
+    res.json({ reply: response.data.choices[0].message.content });
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+    res.status(500).json({ error: "Error al contactar Azure OpenAI." });
+  }
+});
+
 
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
