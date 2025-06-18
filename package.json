@@ -6,6 +6,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dafne-coconi/dogtor-web-app.git"
