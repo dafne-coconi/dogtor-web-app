@@ -45,7 +45,8 @@ app.get("/admin", checkJwt, checkGroup(GROUPS.ADMIN), (req, res) => {
 
 
 app.post("/api/chat", async (req, res) => {
-  const userId = req.auth.preferred_username;
+  console.log("req.auth",req.auth);
+  const userId = req.auth?.preferred_username || "anónimo";
   const userMessage = req.body.message;
 
   try {
