@@ -16,6 +16,41 @@ const searchEndpoint = process.env.AZURE_SEARCH_ENDPOINT;
 const indexName = process.env.AZURE_SEARCH_INDEX;
 const searchApiKey = process.env.AZURE_SEARCH_API;
 
+const { TableClient, AzureNamedKeyCredential } = require("@azure/data-tables");
+
+const account = process.env.CUENTA_STORAGE;
+const accountKey = process.env.TU_LLAVE_STORAGE;
+const tableName = "HistorialDiagnostico";
+
+const credential = new AzureNamedKeyCredential(account, accountKey);
+const client = new TableClient(
+  `https://${account}.table.core.windows.net`,
+  tableName,
+  credential
+);
+
+// Guardar nueva entrada en la tabla
+async function guardarHistorial(sintomas, diagnostico) {
+  const entity = {
+    partitionKey: "historial",
+    rowKey: Date.now().toString(),
+    sintomas,
+    diagnostico,
+    timestamp: new Date().toISOString()
+  };
+  await client.createEntity(entity);
+}
+
+// Consultar historial completo
+async function obtenerHistorial() {
+  const historial = [];
+  for await (const entity of client.listEntities({ queryOptions: { filter: `PartitionKey eq 'historial'` } })) {
+    historial.push(entity);
+  }
+  return historial.sort((a, b) => b.rowKey.localeCompare(a.rowKey)); // más recientes primero
+}
+
+
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -97,6 +132,7 @@ app.post("/api/chat", async (req, res) => {
     //console.log(respuesta)
     res.json({respuesta}
     );
+    await guardarHistorial(userMessage, respuesta);
   } catch (error) {
     console.error("Error:", error.response?.data || error);
     res.status(500).json({ error: "Error al contactar Azure OpenAI." });
@@ -104,9 +140,9 @@ app.post("/api/chat", async (req, res) => {
 });
 
 // Obtener historial del usuario autenticado
-app.get("/api/mihistorial", checkJwt, checkGroup(GROUPS.DUENIOS), (req, res) => {
-  const userId = req.auth.preferred_username;
-  res.json(historial[userId] || []);
+app.get('/historial', async (req, res) => {
+  const historial = await obtenerHistorial();
+  res.json(historial);
 });
 
 // Obtener todo el historial (vet y admin)
